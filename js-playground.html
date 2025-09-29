@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PratsLab - JS Compiler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Theme Variables */
+        :root {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2d2d30;
+            --border: #3c3c3c;
+            --text-primary: #d4d4d4;
+            --text-secondary: #cccccc;
+            --accent: #007acc;
+            --accent-hover: #005a9e;
+            --error: #f48771;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        body.theme-pro-transparency {
+            background: transparent !important;
+        }
+
+        /* Themes */
+        .theme-vscode {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2d2d30;
+            --border: #3c3c3c;
+            --text-primary: #d4d4d4;
+            --text-secondary: #cccccc;
+            --accent: #007acc;
+            --accent-hover: #005a9e;
+            --error: #f48771;
+        }
+
+        .theme-black {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #1a1a1a;
+            --border: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --accent: #ffffff;
+            --accent-hover: #cccccc;
+            --error: #ff6b6b;
+        }
+
+        .theme-matrix {
+            --bg-primary: #000000;
+            --bg-secondary: #001100;
+            --bg-tertiary: #002200;
+            --border: #00ff00;
+            --text-primary: #00ff00;
+            --text-secondary: #00cc00;
+            --accent: #00ff00;
+            --accent-hover: #00cc00;
+            --error: #ff0000;
+        }
+
+        .theme-tokyo {
+            --bg-primary: #0f0f14;
+            --bg-secondary: #16161e;
+            --bg-tertiary: #1a1b26;
+            --border: #24283b;
+            --text-primary: #c0caf5;
+            --text-secondary: #a9b1d6;
+            --accent: #7aa2f7;
+            --accent-hover: #5a7fd4;
+            --error: #f7768e;
+        }
+
+        .theme-solarized {
+            --bg-primary: #fdf6e3;
+            --bg-secondary: #eee8d5;
+            --bg-tertiary: #e3dcc6;
+            --border: #d3af86;
+            --text-primary: #586e75;
+            --text-secondary: #657b83;
+            --accent: #268bd2;
+            --accent-hover: #2aa198;
+            --error: #dc322f;
+        }
+
+        .theme-monokai-dimmed {
+            --bg-primary: #1e1f1c;
+            --bg-secondary: #2f2f2a;
+            --bg-tertiary: #3a3a35;
+            --border: #5a5a50;
+            --text-primary: #c5c8c6;
+            --text-secondary: #a8a8a2;
+            --accent: #8ac6f2;
+            --accent-hover: #e06c75;
+            --error: #e06c75;
+        }
+
+
+
+        .header {
+            background: var(--bg-tertiary);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .theme-selector {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-dropdown {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 120px;
+        }
+
+        .theme-dropdown:hover {
+            background: var(--border);
+        }
+
+        .theme-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 150px;
+            display: none;
+        }
+
+        .theme-menu.show {
+            display: block;
+        }
+
+        .theme-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .theme-option:last-child {
+            border-bottom: none;
+        }
+
+        .theme-option:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .theme-option.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .fullscreen-btn {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 110px);
+        }
+
+        .sidebar {
+            width: 250px;
+            min-width: 120px;
+            max-width: 500px;
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+            flex-shrink: 0;
+        }
+
+        .sidebar-resizer {
+            width: 4px;
+            background: transparent;
+            cursor: col-resize;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar-resizer:hover {
+            background: var(--accent);
+        }
+
+        .sidebar.hidden {
+            width: 0;
+            min-width: 0;
+            resize: none;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .file-tree {
+            flex: 1;
+            padding: 8px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .file-item.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .file-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .file-btn:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .editor-panel #editor {
+            flex: 1;
+        }
+
+        .output-panel {
+            width: 50%;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+        }
+
+        .terminal-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            flex-shrink: 0;
+            min-height: 40px;
+        }
+
+        .terminal-tab {
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 120px;
+        }
+
+        .terminal-tab.active {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .terminal-tab:hover {
+            background: var(--bg-secondary);
+        }
+
+        .tab-close {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 2px 4px;
+            margin-left: 4px;
+        }
+
+        .terminal-content {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .terminal-content.active {
+            display: flex;
+        }
+
+        #terminalContainer {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .add-terminal {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .resizer {
+            width: 4px;
+            background: var(--border);
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+
+        .resizer:hover {
+            background: var(--accent);
+        }
+
+        #editor {
+            flex: 1;
+            padding-top: 12px;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            height: 60px;
+            transition: transform 0.3s ease;
+        }
+
+        .bottom-bar.hidden {
+            transform: translateY(100%);
+        }
+
+        .bottom-bar-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bottom-bar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .toggle-sidebar:hover {
+            background: var(--border);
+            transform: translateY(-1px);
+        }
+
+        .run-btn {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .run-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 122, 204, 0.3);
+        }
+
+        .output-header {
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            min-height: 40px;
+        }
+
+        .output-content {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            min-height: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background: var(--bg-primary);
+        }
+
+        .terminal-input {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+            gap: 8px;
+        }
+
+        .prompt {
+            color: var(--accent);
+            font-weight: bold;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+
+        .input-line {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .input-line::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            white-space: pre-wrap;
+            padding: 4px 8px;
+            border-radius: 3px;
+            border-left: 3px solid var(--accent);
+            background: var(--bg-secondary);
+        }
+
+        .log-error {
+            color: var(--error);
+            border-left-color: var(--error);
+        }
+
+        .log-info {
+            color: var(--text-primary);
+        }
+
+        .clear-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        /* Fullscreen styles */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="theme-vscode">
+    <div class="header">
+        <div class="logo"><i data-feather="zap"></i> PratsLab</div>
+        <div class="theme-selector">
+            <div class="theme-dropdown" onclick="toggleThemeMenu()">
+                <i data-feather="palette"></i>
+                <span id="currentTheme">VS Code</span>
+                <i data-feather="chevron-down"></i>
+            </div>
+            <div class="theme-menu" id="themeMenu">
+                <div class="theme-option active" onclick="selectTheme('vscode', 'VS Code')">VS Code</div>
+                <div class="theme-option" onclick="selectTheme('black', 'Black')">Black</div>
+                <div class="theme-option" onclick="selectTheme('matrix', 'Matrix')">Matrix</div>
+                <div class="theme-option" onclick="selectTheme('tokyo', 'Tokyo Night')">Tokyo Night</div>
+                <div class="theme-option" onclick="selectTheme('solarized', 'Solarized Light')">Solarized Light</div>
+                <div class="theme-option" onclick="selectTheme('monokai-dimmed', 'Monokai Dimmed')">Monokai Dimmed</div>
+
+            </div>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()"><i data-feather="maximize"></i> Fullscreen</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header"><i data-feather="folder"></i> EXPLORER</div>
+            <div class="file-tree" id="fileTree"></div>
+        </div>
+        <div class="sidebar-resizer" id="sidebarResizer"></div>
+        <div class="editor-panel">
+            <div id="editor"></div>
+
+        </div>
+        <div class="resizer" id="resizer"></div>
+        <div class="output-panel">
+            <div class="terminal-tabs" id="terminalTabs">
+                <button class="add-terminal" onclick="addTerminal()"><i data-feather="plus"></i> Terminal</button>
+            </div>
+            <div id="terminalContainer"></div>
+        </div>
+    </div>
+
+    <!-- Full Width Bottom Bar -->
+    <div class="bottom-bar" id="bottomBar">
+        <div class="bottom-bar-left">
+            <button class="toggle-sidebar" onclick="toggleSidebar()"><i data-feather="sidebar"></i> Files</button>
+            <div class="file-actions">
+                <button class="file-btn" onclick="createFile()"><i data-feather="file-plus"></i> New</button>
+                <button class="file-btn" onclick="createFolder()"><i data-feather="folder-plus"></i> Folder</button>
+                <button class="file-btn" onclick="deleteFile()"><i data-feather="trash-2"></i> Delete</button>
+            </div>
+        </div>
+        <div class="bottom-bar-right">
+            <span style="font-size: 11px; color: var(--text-secondary); margin-right: 12px;">Ctrl+Enter: Run | Ctrl+b: Explorer </span>
+            <button class="run-btn" onclick="runCode()"><i data-feather="play"></i> Run Code</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script>
+        let editor;
+        let isResizing = false;
+        let currentTheme = 'vscode';
+        let isFullscreen = false;
+        let terminals = [];
+        let activeTerminal = 0;
+
+        let files = {};
+        
+        // Load files from localStorage or use defaults
+        function loadFilesFromStorage() {
+            const savedFiles = localStorage.getItem('jsPlaygroundFiles');
+            if (savedFiles) {
+                files = JSON.parse(savedFiles);
+            } else {
+                files = {
+                    'main.js': '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// 🚀 Welcome to JS Playground!\nconsole.log("Hello, World! 👋");\n\n// Try some modern JavaScript:\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log("Doubled:", doubled);\n\n// Async/await example:\nconst delay = ms => new Promise(resolve => setTimeout(resolve, ms));\n\nasync function demo() {\n    console.log("Starting async demo...");\n    await delay(1000);\n    console.log("✅ Demo completed!");\n}\n\n// Uncomment to run:\n// demo();',
+                    'utils.js': '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// Utility functions\nconst formatDate = (date) => {\n    return new Intl.DateTimeFormat(\'en-US\').format(date);\n};\n\nconst randomNumber = (min, max) => {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n};\n\nconsole.log("Utils loaded!");'
+                };
+                saveFilesToStorage();
+            }
+        }
+        
+        // Save files to localStorage
+        function saveFilesToStorage() {
+            localStorage.setItem('jsPlaygroundFiles', JSON.stringify(files));
+        }
+        let currentFile = 'main.js';
+        let sidebarVisible = true;
+        let bottomBarVisible = true;
+        let isResizingSidebar = false;
+
+        // Block browser dialogs in parent window
+        const originalPrompt = window.prompt;
+        const originalAlert = window.alert;
+        const originalConfirm = window.confirm;
+        
+        window.prompt = function(message, defaultValue) { 
+            console.log('PROMPT: ' + message + ' (Using default: 5)');
+            return defaultValue || '5'; 
+        };
+        window.alert = function() { };
+        window.confirm = function() { return false; };
+
+        // Define custom Monaco themes
+        function defineCustomThemes() {
+            monaco.editor.defineTheme('black-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '666666' },
+                    { token: 'keyword', foreground: 'ffffff', fontStyle: 'bold' },
+                    { token: 'string', foreground: 'cccccc' },
+                    { token: 'number', foreground: 'ffffff' }
+                ],
+                colors: {
+                    'editor.background': '#000000',
+                    'editor.foreground': '#ffffff',
+                    'editor.lineHighlightBackground': '#0a0a0a',
+                    'editorCursor.foreground': '#ffffff',
+                    'editor.selectionBackground': '#333333'
+                }
+            });
+
+            monaco.editor.defineTheme('matrix-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '008800' },
+                    { token: 'keyword', foreground: '00ff00', fontStyle: 'bold' },
+                    { token: 'string', foreground: '00cc00' },
+                    { token: 'number', foreground: '00ff00' }
+                ],
+                colors: {
+                    'editor.background': '#000000',
+                    'editor.foreground': '#00ff00',
+                    'editor.lineHighlightBackground': '#001100',
+                    'editorCursor.foreground': '#00ff00',
+                    'editor.selectionBackground': '#002200'
+                }
+            });
+
+            monaco.editor.defineTheme('tokyo-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '565f89' },
+                    { token: 'keyword', foreground: '7aa2f7', fontStyle: 'bold' },
+                    { token: 'string', foreground: '9ece6a' },
+                    { token: 'number', foreground: 'ff9e64' }
+                ],
+                colors: {
+                    'editor.background': '#0f0f14',
+                    'editor.foreground': '#c0caf5',
+                    'editor.lineHighlightBackground': '#16161e',
+                    'editorCursor.foreground': '#c0caf5',
+                    'editor.selectionBackground': '#24283b'
+                }
+            });
+
+            monaco.editor.defineTheme('solarized-theme', {
+                base: 'vs',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '93a1a1' },
+                    { token: 'keyword', foreground: '268bd2', fontStyle: 'bold' },
+                    { token: 'string', foreground: '2aa198' },
+                    { token: 'number', foreground: 'd33682' }
+                ],
+                colors: {
+                    'editor.background': '#fdf6e3',
+                    'editor.foreground': '#586e75',
+                    'editor.lineHighlightBackground': '#eee8d5',
+                    'editorCursor.foreground': '#586e75',
+                    'editor.selectionBackground': '#d3af86'
+                }
+            });
+
+            monaco.editor.defineTheme('monokai-dimmed-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '5a5a50' },
+                    { token: 'keyword', foreground: '8ac6f2', fontStyle: 'bold' },
+                    { token: 'string', foreground: '98c379' },
+                    { token: 'number', foreground: 'd19a66' }
+                ],
+                colors: {
+                    'editor.background': '#1e1f1c',
+                    'editor.foreground': '#c5c8c6',
+                    'editor.lineHighlightBackground': '#2f2f2a',
+                    'editorCursor.foreground': '#c5c8c6',
+                    'editor.selectionBackground': '#3a3a35'
+                }
+            });
+
+            monaco.editor.defineTheme('pro-transparency-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '888888' },
+                    { token: 'keyword', foreground: '00d4ff', fontStyle: 'bold' },
+                    { token: 'string', foreground: '98fb98' },
+                    { token: 'number', foreground: 'ffa500' }
+                ],
+                colors: {
+                    'editor.background': '#00000000',
+                    'editor.foreground': '#ffffff',
+                    'editor.lineHighlightBackground': '#ffffff10',
+                    'editorCursor.foreground': '#00d4ff',
+                    'editor.selectionBackground': '#ffffff20'
+                }
+            });
+        }
+
+        // Theme mappings for Monaco Editor
+        const monacoThemes = {
+            vscode: 'vs-dark',
+            black: 'black-theme',
+            matrix: 'matrix-theme',
+            tokyo: 'tokyo-theme',
+            solarized: 'solarized-theme',
+            'monokai-dimmed': 'monokai-dimmed-theme'
+        };
+
+        // Initialize Monaco Editor
+        require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            // Define custom themes first
+            defineCustomThemes();
+            
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: files[currentFile],
+                language: 'javascript',
+                theme: monacoThemes[currentTheme],
+                fontSize: 14,
+                fontFamily: 'Fira Code, Consolas, Monaco, monospace',
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                wordWrap: 'on',
+                lineNumbers: 'on',
+                folding: true,
+                bracketMatching: 'always'
+            });
+
+            // Keyboard shortcuts
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB, toggleSidebar);
+            
+            // Auto-save on change
+            editor.onDidChangeModelContent(() => {
+                files[currentFile] = editor.getValue();
+                saveFilesToStorage();
+            });
+            
+            // Load files and initialize
+            loadFilesFromStorage();
+            renderFileTree();
+            addTerminal();
+            
+            // Initialize Feather icons
+            setTimeout(() => feather.replace(), 100);
+        });
+
+        // Theme management
+        function toggleThemeMenu() {
+            const menu = document.getElementById('themeMenu');
+            menu.classList.toggle('show');
+        }
+        
+        function selectTheme(theme, displayName) {
+            currentTheme = theme;
+            document.body.className = `theme-${theme}`;
+            
+            // Update dropdown display
+            document.getElementById('currentTheme').textContent = displayName;
+            
+            // Update active option
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update Monaco theme if editor is loaded
+            if (editor && monaco && monacoThemes[theme]) {
+                try {
+                    monaco.editor.setTheme(monacoThemes[theme]);
+                } catch (e) {
+                    console.log('Theme not ready, retrying...');
+                    setTimeout(() => {
+                        if (monaco && monacoThemes[theme]) {
+                            monaco.editor.setTheme(monacoThemes[theme]);
+                        }
+                    }, 100);
+                }
+            }
+            
+            // Close menu
+            document.getElementById('themeMenu').classList.remove('show');
+            
+            localStorage.setItem('jsPlaygroundTheme', theme);
+            localStorage.setItem('jsPlaygroundThemeDisplay', displayName);
+        }
+        
+        // Close theme menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.theme-selector')) {
+                document.getElementById('themeMenu').classList.remove('show');
+            }
+        });
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                document.documentElement.requestFullscreen();
+                isFullscreen = true;
+            } else {
+                document.exitFullscreen();
+                isFullscreen = false;
+            }
+        }
+
+        // Load saved preferences
+        window.addEventListener('load', () => {
+            const savedTheme = localStorage.getItem('jsPlaygroundTheme') || 'vscode';
+            const savedThemeDisplay = localStorage.getItem('jsPlaygroundThemeDisplay') || 'VS Code';
+            
+            if (savedTheme !== 'vscode') {
+                document.body.className = `theme-${savedTheme}`;
+                document.getElementById('currentTheme').textContent = savedThemeDisplay;
+                
+                // Update active option
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    if (opt.onclick.toString().includes(savedTheme)) {
+                        opt.classList.add('active');
+                    }
+                });
+                
+                currentTheme = savedTheme;
+                
+                // Apply Monaco theme after editor loads
+                setTimeout(() => {
+                    if (editor && monaco && monacoThemes[savedTheme]) {
+                        monaco.editor.setTheme(monacoThemes[savedTheme]);
+                    }
+                }, 200);
+            }
+            
+            // Update headers after loading preferences
+            setTimeout(() => {
+                feather.replace();
+            }, 100);
+        });
+
+        // Resizer functionality
+        const resizer = document.getElementById('resizer');
+        const container = document.querySelector('.container');
+        const editorPanel = document.querySelector('.editor-panel');
+        const outputPanel = document.querySelector('.output-panel');
+
+        let startX, startEditorPercentage, startOutputPercentage;
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            
+            // Get current percentages from computed styles
+            const containerRect = container.getBoundingClientRect();
+            const sidebarWidth = document.querySelector('.sidebar').offsetWidth + 4;
+            const availableWidth = containerRect.width - sidebarWidth;
+            
+            startEditorPercentage = (editorPanel.offsetWidth / availableWidth) * 100;
+            startOutputPercentage = (outputPanel.offsetWidth / availableWidth) * 100;
+            
+            document.addEventListener('mousemove', handleResize);
+            document.addEventListener('mouseup', stopResize);
+            e.preventDefault();
+        });
+
+        function handleResize(e) {
+            if (!isResizing) return;
+            
+            const deltaX = e.clientX - startX;
+            const containerRect = container.getBoundingClientRect();
+            const sidebarWidth = document.querySelector('.sidebar').offsetWidth + 4;
+            const availableWidth = containerRect.width - sidebarWidth;
+            
+            // Calculate percentage change based on delta
+            const deltaPercentage = (deltaX / availableWidth) * 100;
+            
+            const newEditorPercentage = startEditorPercentage + deltaPercentage;
+            const newOutputPercentage = startOutputPercentage - deltaPercentage;
+            
+            if (newEditorPercentage > 30 && newEditorPercentage < 70) {
+                editorPanel.style.width = newEditorPercentage + '%';
+                outputPanel.style.width = newOutputPercentage + '%';
+            }
+        }
+
+        // Sidebar resizer
+        const sidebarResizer = document.getElementById('sidebarResizer');
+        const sidebar = document.querySelector('.sidebar');
+
+        sidebarResizer.addEventListener('mousedown', (e) => {
+            isResizingSidebar = true;
+            document.addEventListener('mousemove', handleSidebarResize);
+            document.addEventListener('mouseup', stopSidebarResize);
+            e.preventDefault();
+        });
+
+        function handleSidebarResize(e) {
+            if (!isResizingSidebar) return;
+            const newWidth = e.clientX;
+            if (newWidth >= 120 && newWidth <= 500) {
+                sidebar.style.width = newWidth + 'px';
+            }
+        }
+
+        function stopSidebarResize() {
+            isResizingSidebar = false;
+            document.removeEventListener('mousemove', handleSidebarResize);
+            document.removeEventListener('mouseup', stopSidebarResize);
+        }
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener('mousemove', handleResize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        // Terminal management
+        let terminalCounter = 0;
+        
+        function addTerminal() {
+            const terminalId = terminalCounter++;
+            const terminal = {
+                id: terminalId,
+                name: `Terminal ${terminalId + 1}`,
+                output: []
+            };
+            
+            terminals.push(terminal);
+            
+            // Create tab
+            const tab = document.createElement('button');
+            tab.className = 'terminal-tab';
+            tab.dataset.terminalId = terminalId;
+            tab.innerHTML = `
+                <span>${terminal.name}</span>
+                <span class="tab-close" onclick="closeTerminal(${terminalId}, event)">×</span>
+            `;
+            tab.onclick = (e) => {
+                if (!e.target.classList.contains('tab-close')) {
+                    switchTerminal(terminalId);
+                }
+            };
+            
+            document.getElementById('terminalTabs').insertBefore(tab, document.querySelector('.add-terminal'));
+            
+            // Create content
+            const content = document.createElement('div');
+            content.className = 'terminal-content';
+            content.id = `terminal-${terminalId}`;
+            content.innerHTML = `
+                <div class="output-header">
+                    <span><i data-feather="terminal"></i> ${terminal.name}</span>
+                    <div>
+                        <button class="clear-btn" onclick="clearTerminal(${terminalId})"><i data-feather="trash-2"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="output-content" id="output-${terminalId}"></div>
+                <div class="terminal-input">
+                    <span class="prompt">></span>
+                    <input type="text" class="input-line" id="input-${terminalId}" placeholder="Type command..." />
+                </div>
+            `;
+            
+            document.getElementById('terminalContainer').appendChild(content);
+            
+            // Add input event listener
+            const inputLine = document.getElementById(`input-${terminalId}`);
+            inputLine.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handleTerminalInput(terminalId, inputLine.value);
+                    inputLine.value = '';
+                }
+            });
+            
+            switchTerminal(terminalId);
+            
+            // Update feather icons
+            setTimeout(() => feather.replace(), 10);
+        }
+        
+        function switchTerminal(id) {
+            // Update tabs
+            document.querySelectorAll('.terminal-tab').forEach(tab => {
+                if (parseInt(tab.dataset.terminalId) === id) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update content
+            document.querySelectorAll('.terminal-content').forEach(content => {
+                const contentId = parseInt(content.id.split('-')[1]);
+                if (contentId === id) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            activeTerminal = id;
+        }
+        
+        function closeTerminal(id, event) {
+            event.stopPropagation();
+            
+            if (terminals.length <= 1) return; // Keep at least one terminal
+            
+            // Remove tab and content
+            const tab = document.querySelector(`[data-terminal-id="${id}"]`);
+            const content = document.getElementById(`terminal-${id}`);
+            
+            if (tab) tab.remove();
+            if (content) content.remove();
+            
+            // Remove from terminals array
+            terminals = terminals.filter(t => t.id !== id);
+            
+            // Switch to first available terminal if current was closed
+            if (activeTerminal === id && terminals.length > 0) {
+                switchTerminal(terminals[0].id);
+            }
+        }
+        
+        function clearTerminal(id) {
+            const output = document.getElementById(`output-${id}`);
+            if (output) {
+                output.innerHTML = '';
+            }
+            const terminal = terminals.find(t => t.id === id);
+            if (terminal) {
+                terminal.output = [];
+            }
+        }
+        
+
+
+        // Code execution
+        function runCode() {
+            let code = editor.getValue();
+            const outputElement = document.getElementById(`output-${activeTerminal}`);
+            
+            // Check if code contains prompt() calls
+            if (code.includes('prompt(')) {
+                handleInteractiveCode(code);
+                return;
+            }
+            
+            // Add separator if there's existing output
+            if (outputElement.children.length > 0) {
+                const separator = document.createElement('div');
+                separator.style.cssText = 'border-top: 1px solid var(--border); margin: 8px 0; opacity: 0.5;';
+                outputElement.appendChild(separator);
+            }
+            
+            executeCode(code);
+        }
+        
+        function handleInteractiveCode(code) {
+            // Find first prompt call
+            const promptMatch = code.match(/prompt\s*\(\s*["'`]([^"'`]*)["'`]\s*(?:,\s*["'`]([^"'`]*)["'`])?\s*\)/);
+            if (promptMatch) {
+                const message = promptMatch[1];
+                const defaultValue = promptMatch[2] || '';
+                
+                showTerminalPrompt(message, defaultValue, (userInput) => {
+                    // Replace the prompt call with the user input
+                    const modifiedCode = code.replace(promptMatch[0], `"${userInput}"`);
+                    
+                    // Add separator if there's existing output
+                    const outputElement = document.getElementById(`output-${activeTerminal}`);
+                    if (outputElement.children.length > 0) {
+                        const separator = document.createElement('div');
+                        separator.style.cssText = 'border-top: 1px solid var(--border); margin: 8px 0; opacity: 0.5;';
+                        outputElement.appendChild(separator);
+                    }
+                    
+                    executeCode(modifiedCode);
+                });
+            }
+        }
+        
+        function executeCode(code) {
+
+            // Create sandboxed iframe for execution
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            // Override console methods in iframe
+            const script = iframeDoc.createElement('script');
+            script.textContent = `
+                // Interactive prompt system
+                window.prompt = function(message, defaultValue) {
+                    window.parent.postMessage({
+                        type: 'prompt',
+                        message: message,
+                        defaultValue: defaultValue || '',
+                        terminalId: ${activeTerminal}
+                    }, '*');
+                    // This will be replaced by actual user input
+                    return '__PROMPT_PLACEHOLDER__';
+                };
+                window.alert = function() { };
+                window.confirm = function() { return false; };
+                
+                console.log = function(...args) {
+                    window.parent.postMessage({
+                        type: 'log',
+                        level: 'info',
+                        terminalId: ${activeTerminal},
+                        message: args.map(arg => 
+                            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                        ).join(' ')
+                    }, '*');
+                };
+
+                console.error = function(...args) {
+                    window.parent.postMessage({
+                        type: 'log',
+                        level: 'error',
+                        terminalId: ${activeTerminal},
+                        message: args.map(arg => String(arg)).join(' ')
+                    }, '*');
+                };
+
+                console.warn = function(...args) {
+                    window.parent.postMessage({
+                        type: 'log',
+                        level: 'warn',
+                        terminalId: ${activeTerminal},
+                        message: args.map(arg => String(arg)).join(' ')
+                    }, '*');
+                };
+
+                window.onerror = function(message, source, lineno, colno, error) {
+                    window.parent.postMessage({
+                        type: 'log',
+                        level: 'error',
+                        terminalId: ${activeTerminal},
+                        message: 'Error: ' + message + (lineno ? ' (line ' + lineno + ')' : '')
+                    }, '*');
+                    return true;
+                };
+
+
+
+                try {
+                    ${code}
+                } catch (error) {
+                    window.parent.postMessage({
+                        type: 'log',
+                        level: 'error',
+                        terminalId: ${activeTerminal},
+                        message: 'Error: ' + error.message
+                    }, '*');
+                }
+            `;
+
+            iframeDoc.head.appendChild(script);
+
+            // Clean up iframe after execution
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
+        }
+
+        // Handle messages from iframe
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'log') {
+                addLogEntry(event.data.message, event.data.level, event.data.terminalId);
+            }
+        });
+
+        function addLogEntry(message, level = 'info', terminalId = activeTerminal) {
+            const output = document.getElementById(`output-${terminalId}`);
+            if (!output) return;
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${level}`;
+            entry.textContent = message;
+            output.appendChild(entry);
+            
+            // Force scroll to bottom with multiple attempts
+            const scrollToBottom = () => {
+                output.scrollTop = output.scrollHeight;
+            };
+            
+            requestAnimationFrame(scrollToBottom);
+            setTimeout(scrollToBottom, 10);
+            setTimeout(scrollToBottom, 50);
+            
+            // Store in terminal history
+            const terminal = terminals.find(t => t.id === terminalId);
+            if (terminal) {
+                terminal.output.push({ message, level });
+            }
+        }
+
+        let pendingPrompt = null;
+
+        function showTerminalPrompt(message, defaultValue = '', callback) {
+            addLogEntry(message, 'info');
+            const inputLine = document.getElementById(`input-${activeTerminal}`);
+            inputLine.value = defaultValue;
+            inputLine.placeholder = 'Type your answer and press Enter...';
+            inputLine.focus();
+            pendingPrompt = callback;
+        }
+
+        function handleTerminalInput(terminalId, input) {
+            // Show the input in terminal
+            addLogEntry(`> ${input}`, 'info', terminalId);
+            
+            if (pendingPrompt) {
+                pendingPrompt(input);
+                pendingPrompt = null;
+                const inputLine = document.getElementById(`input-${terminalId}`);
+                inputLine.placeholder = 'Type command...';
+                return;
+            }
+            
+            // Handle basic terminal commands
+            const cmd = input.trim().toLowerCase();
+            if (cmd === 'clear') {
+                clearTerminal(terminalId);
+            } else if (cmd === 'help') {
+                addLogEntry('Available commands: clear, help, run, files', 'info', terminalId);
+            } else if (cmd === 'run') {
+                runCode();
+            } else if (cmd === 'files') {
+                addLogEntry('Files: ' + Object.keys(files).join(', '), 'info', terminalId);
+            } else if (cmd) {
+                addLogEntry(`Unknown command: ${input}`, 'error', terminalId);
+            }
+        }
+
+        // File system management
+        function renderFileTree() {
+            const tree = document.getElementById('fileTree');
+            tree.innerHTML = '';
+            
+            Object.keys(files).forEach(filename => {
+                const item = document.createElement('div');
+                item.className = `file-item ${filename === currentFile ? 'active' : ''}`;
+                item.innerHTML = `<i data-feather="file-text"></i> ${filename}`;
+                item.onclick = () => openFile(filename);
+                item.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    renameFile(filename);
+                };
+                tree.appendChild(item);
+            });
+        }
+        
+        function openFile(filename) {
+            if (files[filename] !== undefined) {
+                currentFile = filename;
+                editor.setValue(files[filename]);
+                renderFileTree();
+            }
+        }
+        
+        function createFile() {
+            showTerminalPrompt('Enter file name:', 'newfile.js', (name) => {
+                if (name && !files[name]) {
+                    files[name] = '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// New file\nconsole.log("Hello from ' + name + '");';
+                    saveFilesToStorage();
+                    renderFileTree();
+                    openFile(name);
+                }
+            });
+        }
+        
+        function createFolder() {
+            addLogEntry('Folders not implemented yet - use file names with / for organization', 'info');
+        }
+        
+        function deleteFile() {
+            if (Object.keys(files).length <= 1) {
+                addLogEntry('Cannot delete the last file', 'error');
+                return;
+            }
+            
+            showTerminalPrompt(`Delete ${currentFile}? (y/n):`, '', (answer) => {
+                if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+                    const deletedFile = currentFile;
+                    delete files[currentFile];
+                    saveFilesToStorage();
+                    const remaining = Object.keys(files);
+                    currentFile = remaining[0];
+                    editor.setValue(files[currentFile]);
+                    renderFileTree();
+                    addLogEntry(`Deleted ${deletedFile}`, 'info');
+                }
+            });
+        }
+        
+        function renameFile(oldName) {
+            showTerminalPrompt('Enter new name:', oldName, (newName) => {
+                if (newName && newName !== oldName && !files[newName]) {
+                    files[newName] = files[oldName];
+                    delete files[oldName];
+                    if (currentFile === oldName) {
+                        currentFile = newName;
+                    }
+                    saveFilesToStorage();
+                    renderFileTree();
+                    addLogEntry(`Renamed ${oldName} to ${newName}`, 'info');
+                }
+            });
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebarVisible = !sidebarVisible;
+            sidebar.classList.toggle('hidden', !sidebarVisible);
+        }
+
+        // Fullscreen event listeners
+        document.addEventListener('fullscreenchange', () => {
+            isFullscreen = !!document.fullscreenElement;
+        });
+        
+        function toggleBottomBar() {
+            const bottomBar = document.getElementById('bottomBar');
+            bottomBarVisible = !bottomBarVisible;
+            bottomBar.classList.toggle('hidden', !bottomBarVisible);
+            
+            // Adjust container height
+            const container = document.querySelector('.container');
+            container.style.height = bottomBarVisible ? 'calc(100vh - 110px)' : 'calc(100vh - 50px)';
+        }
+
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+            if (e.ctrlKey && e.key === '`') {
+                e.preventDefault();
+                toggleBottomBar();
+            }
+        });
+    </script>
+</body>
+</html>
