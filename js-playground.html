@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PratsLab - JS Compiler</title>
+    <title>PratsLab</title>
     <style>
         * {
             margin: 0;
@@ -589,6 +589,7 @@
             background: var(--accent);
         }
     </style>
+    <link rel="icon" type="image/jpeg" href="img1.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
@@ -818,11 +819,14 @@
         // Initialize Monaco Editor
         require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
         require(['vs/editor/editor.main'], function () {
+            // Load files first
+            loadFilesFromStorage();
+            
             // Define custom themes first
             defineCustomThemes();
             
             editor = monaco.editor.create(document.getElementById('editor'), {
-                value: files[currentFile],
+                value: files[currentFile] || '',
                 language: 'javascript',
                 theme: monacoThemes[currentTheme],
                 fontSize: 14,
@@ -846,8 +850,7 @@
                 saveFilesToStorage();
             });
             
-            // Load files and initialize
-            loadFilesFromStorage();
+            // Initialize UI
             renderFileTree();
             addTerminal();
             
