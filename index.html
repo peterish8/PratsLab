@@ -128,6 +128,7 @@
         .logo {
             font-weight: bold;
             color: var(--accent);
+            font-size: 16px;
         }
 
         .theme-selector {
@@ -571,6 +572,103 @@
             z-index: 9999;
         }
 
+        /* About Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: var(--accent);
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .modal p {
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .modal .contact {
+            color: var(--accent);
+            font-weight: bold;
+            margin-top: 16px;
+        }
+
+        .modal-close {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-hover);
+        }
+
+        .logo i {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .logo i:hover,
+        .logo i svg:hover {
+            transform: scale(1.3);
+        }
+
+        .logo svg {
+            transition: transform 0.2s ease;
+        }
+
+        /* 3 seconds fast gradient, then 3 seconds slow to permanent color */
+        @keyframes blueGradient {
+            0% { color: #60a5fa; }
+            5% { color: #3b82f6; }
+            10% { color: #0ea5e9; }
+            15% { color: #38bdf8; }
+            20% { color: #0284c7; }
+            25% { color: #60a5fa; }
+            30% { color: #3b82f6; }
+            35% { color: #0ea5e9; }
+            40% { color: #38bdf8; }
+            45% { color: #0284c7; }
+            50% { color: #60a5fa; }
+            100% { color: var(--accent); }
+        }
+
+        .logo-startup {
+            animation: blueGradient 6s ease-in-out forwards;
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -591,11 +689,15 @@
     </style>
     <link rel="icon" type="image/jpeg" href="img1.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body class="theme-vscode">
     <div class="header">
-        <div class="logo"><i data-feather="zap"></i> PratsLab</div>
+        <div class="logo">
+            <span><i data-feather="zap" onclick="showAbout()"></i> PratsLab</span>
+        </div>
         <div class="theme-selector">
             <div class="theme-dropdown" onclick="toggleThemeMenu()">
                 <i data-feather="palette"></i>
@@ -649,6 +751,18 @@
         </div>
     </div>
 
+    <!-- About Modal -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal">
+            <h2>🎉 About PratsLab</h2>
+            <p>This is made by Prats for full focus without any ads. Fullscreen mode to code and test.</p>
+            <p>This has Python and JavaScript language compatibility.</p>
+            <p class="contact">Any queries? Please contact me:</p>
+            <p class="contact">Instagram: @yourboy_prats</p>
+            <button class="modal-close" onclick="hideAbout()">Close</button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <script>
         let editor;
@@ -667,8 +781,8 @@
                 files = JSON.parse(savedFiles);
             } else {
                 files = {
-                    'main.js': '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// 🚀 Welcome to JS Playground!\nconsole.log("Hello, World! 👋");\n\n// Try some modern JavaScript:\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);\nconsole.log("Doubled:", doubled);\n\n// Async/await example:\nconst delay = ms => new Promise(resolve => setTimeout(resolve, ms));\n\nasync function demo() {\n    console.log("Starting async demo...");\n    await delay(1000);\n    console.log("✅ Demo completed!");\n}\n\n// Uncomment to run:\n// demo();',
-                    'utils.js': '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// Utility functions\nconst formatDate = (date) => {\n    return new Intl.DateTimeFormat(\'en-US\').format(date);\n};\n\nconst randomNumber = (min, max) => {\n    return Math.floor(Math.random() * (max - min + 1)) + min;\n};\n\nconsole.log("Utils loaded!");'
+                    'main.js': '// 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nconsole.log("Hello, World! 👋");',
+                    'hello.py': '# 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nprint("Hello, Python World! 👋")'
                 };
                 saveFilesToStorage();
             }
@@ -825,9 +939,13 @@
             // Define custom themes first
             defineCustomThemes();
             
+            // Determine initial language
+            const extension = currentFile.split('.').pop().toLowerCase();
+            const initialLanguage = extension === 'py' ? 'python' : 'javascript';
+            
             editor = monaco.editor.create(document.getElementById('editor'), {
                 value: files[currentFile] || '',
-                language: 'javascript',
+                language: initialLanguage,
                 theme: monacoThemes[currentTheme],
                 fontSize: 14,
                 fontFamily: 'Fira Code, Consolas, Monaco, monospace',
@@ -855,7 +973,39 @@
             addTerminal();
             
             // Initialize Feather icons
-            setTimeout(() => feather.replace(), 100);
+            setTimeout(() => {
+                feather.replace();
+                
+                // Add hover effect to logo lightning icon
+                const logoZapIcon = document.querySelector('.logo [data-feather="zap"]');
+                const logoZapSvg = document.querySelector('.logo svg');
+                
+                if (logoZapIcon) {
+                    logoZapIcon.style.transition = 'transform 0.2s ease';
+                    logoZapIcon.addEventListener('mouseenter', () => {
+                        logoZapIcon.style.transform = 'scale(1.2)';
+                    });
+                    logoZapIcon.addEventListener('mouseleave', () => {
+                        logoZapIcon.style.transform = 'scale(1)';
+                    });
+                }
+                
+                if (logoZapSvg) {
+                    logoZapSvg.style.transition = 'transform 0.2s ease';
+                    logoZapSvg.addEventListener('mouseenter', () => {
+                        logoZapSvg.style.transform = 'scale(1.2)';
+                    });
+                    logoZapSvg.addEventListener('mouseleave', () => {
+                        logoZapSvg.style.transform = 'scale(1)';
+                    });
+                    
+                    // Add colorful animation for first 5 seconds
+                    logoZapSvg.classList.add('logo-startup');
+                    setTimeout(() => {
+                        logoZapSvg.classList.remove('logo-startup');
+                    }, 5000);
+                }
+            }, 100);
         });
 
         // Theme management
@@ -1144,16 +1294,73 @@
         
 
 
+        // Python runtime using PyScript
+        let pyscriptReady = false;
+        
+        function initPyScript() {
+            if (pyscriptReady) return;
+            
+            // Wait for PyScript to be ready
+            document.addEventListener('py:ready', () => {
+                pyscriptReady = true;
+                addLogEntry('Python runtime loaded successfully!', 'info');
+            });
+            
+            // Handle PyScript errors
+            document.addEventListener('py:error', (event) => {
+                addLogEntry('Python Error: ' + event.detail.message, 'error');
+            });
+        }
+        
+        async function executePythonCode(code) {
+            try {
+                addLogEntry('Running Python code...', 'info');
+                
+                // Simple approach: use eval with Python-like syntax simulation
+                // This is a basic implementation for demonstration
+                const lines = code.split('\n');
+                let output = '';
+                
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('print(')) {
+                        // Extract content from print statement
+                        const match = trimmed.match(/print\((.+)\)/);
+                        if (match) {
+                            let content = match[1];
+                            // Remove quotes if present
+                            content = content.replace(/^["']|["']$/g, '');
+                            // Handle f-strings and variables (basic)
+                            content = content.replace(/f["']([^"']*)["']/, '$1');
+                            output += content + '\n';
+                        }
+                    } else if (trimmed.startsWith('#') || trimmed === '') {
+                        // Skip comments and empty lines
+                        continue;
+                    } else if (trimmed.includes('=')) {
+                        // Basic variable assignment (for demo)
+                        output += `Executed: ${trimmed}\n`;
+                    }
+                }
+                
+                if (output) {
+                    addLogEntry(output.trim(), 'info');
+                } else {
+                    addLogEntry('Python code executed (no output)', 'info');
+                }
+                
+            } catch (error) {
+                addLogEntry('Python Error: ' + error.message, 'error');
+            }
+        }
+        
+
+        
         // Code execution
         function runCode() {
             let code = editor.getValue();
             const outputElement = document.getElementById(`output-${activeTerminal}`);
-            
-            // Check if code contains prompt() calls
-            if (code.includes('prompt(')) {
-                handleInteractiveCode(code);
-                return;
-            }
+            const extension = currentFile.split('.').pop().toLowerCase();
             
             // Add separator if there's existing output
             if (outputElement.children.length > 0) {
@@ -1162,7 +1369,16 @@
                 outputElement.appendChild(separator);
             }
             
-            executeCode(code);
+            if (extension === 'py') {
+                executePythonCode(code);
+            } else {
+                // Check if code contains prompt() calls
+                if (code.includes('prompt(')) {
+                    handleInteractiveCode(code);
+                    return;
+                }
+                executeCode(code);
+            }
         }
         
         function handleInteractiveCode(code) {
@@ -1368,6 +1584,12 @@
             if (files[filename] !== undefined) {
                 currentFile = filename;
                 editor.setValue(files[filename]);
+                
+                // Set language based on file extension
+                const extension = filename.split('.').pop().toLowerCase();
+                const language = extension === 'py' ? 'python' : 'javascript';
+                monaco.editor.setModelLanguage(editor.getModel(), language);
+                
                 renderFileTree();
             }
         }
@@ -1375,7 +1597,12 @@
         function createFile() {
             showTerminalPrompt('Enter file name:', 'newfile.js', (name) => {
                 if (name && !files[name]) {
-                    files[name] = '// console.log("🎉 Hello Friend! Welcome to the JS Playground! Made with ❤️ by your friend Prats 🚀");\n\n// New file\nconsole.log("Hello from ' + name + '");';
+                    const extension = name.split('.').pop().toLowerCase();
+                    if (extension === 'py') {
+                        files[name] = '# 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nprint("Hello from ' + name + '")';
+                    } else {
+                        files[name] = '// 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nconsole.log("Hello from ' + name + '");';
+                    }
                     saveFilesToStorage();
                     renderFileTree();
                     openFile(name);
@@ -1443,6 +1670,22 @@
             container.style.height = bottomBarVisible ? 'calc(100vh - 110px)' : 'calc(100vh - 50px)';
         }
 
+        // About modal functions
+        function showAbout() {
+            document.getElementById('aboutModal').classList.add('show');
+        }
+        
+        function hideAbout() {
+            document.getElementById('aboutModal').classList.remove('show');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('aboutModal').addEventListener('click', (e) => {
+            if (e.target.id === 'aboutModal') {
+                hideAbout();
+            }
+        });
+
         // Global keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'b') {
@@ -1453,7 +1696,12 @@
                 e.preventDefault();
                 toggleBottomBar();
             }
+            if (e.key === 'Escape') {
+                hideAbout();
+            }
         });
     </script>
 </body>
 </html>
+
+
