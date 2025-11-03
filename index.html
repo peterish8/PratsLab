@@ -1239,15 +1239,13 @@
         isResizing = true;
         startX = e.clientX;
 
-        // Get current percentages from computed styles
-        const containerRect = container.getBoundingClientRect();
-        const sidebarWidth = document.querySelector(".sidebar").offsetWidth + 4;
-        const availableWidth = containerRect.width - sidebarWidth;
+        // Get current actual pixel widths (more reliable after sidebar resize)
+        const currentEditorWidth = editorPanel.offsetWidth;
+        const currentOutputWidth = outputPanel.offsetWidth;
 
-        startEditorPercentage =
-          (editorPanel.offsetWidth / availableWidth) * 100;
-        startOutputPercentage =
-          (outputPanel.offsetWidth / availableWidth) * 100;
+        // Store initial widths for calculation
+        startEditorPercentage = currentEditorWidth;
+        startOutputPercentage = currentOutputWidth;
 
         document.addEventListener("mousemove", handleResize);
         document.addEventListener("mouseup", stopResize);
@@ -1259,18 +1257,33 @@
 
         const deltaX = e.clientX - startX;
         const containerRect = container.getBoundingClientRect();
-        const sidebarWidth = document.querySelector(".sidebar").offsetWidth + 4;
+        const sidebarElement = document.querySelector(".sidebar");
+        const sidebarWidth = sidebarElement.offsetWidth + 4;
         const availableWidth = containerRect.width - sidebarWidth;
 
-        // Calculate percentage change based on delta
-        const deltaPercentage = (deltaX / availableWidth) * 100;
+        // Use initial widths stored at mousedown
+        const initialEditorWidth = startEditorPercentage;
+        const initialOutputWidth = startOutputPercentage;
 
-        const newEditorPercentage = startEditorPercentage + deltaPercentage;
-        const newOutputPercentage = startOutputPercentage - deltaPercentage;
+        // Calculate new widths based on mouse movement from initial position
+        const newEditorWidth = initialEditorWidth + deltaX;
+        const newOutputWidth = initialOutputWidth - deltaX;
 
-        if (newEditorPercentage > 30 && newEditorPercentage < 70) {
-          editorPanel.style.width = newEditorPercentage + "%";
-          outputPanel.style.width = newOutputPercentage + "%";
+        // Ensure minimum widths (at least 30% of available space)
+        const minWidth = availableWidth * 0.3;
+        const maxWidth = availableWidth * 0.7;
+
+        if (
+          newEditorWidth >= minWidth &&
+          newEditorWidth <= maxWidth &&
+          newOutputWidth >= minWidth &&
+          newOutputWidth <= maxWidth
+        ) {
+          // Use pixel-based widths for more accurate resizing
+          editorPanel.style.width = newEditorWidth + "px";
+          outputPanel.style.width = newOutputWidth + "px";
+          editorPanel.style.flex = "0 0 auto";
+          outputPanel.style.flex = "0 0 auto";
         }
       }
 
@@ -1290,6 +1303,24 @@
         const newWidth = e.clientX;
         if (newWidth >= 120 && newWidth <= 500) {
           sidebar.style.width = newWidth + "px";
+
+          // When sidebar resizes, recalculate editor/output panel widths
+          // to maintain proper proportions
+          const containerRect = container.getBoundingClientRect();
+          const availableWidth = containerRect.width - newWidth - 4;
+
+          // If panels have percentage widths, convert to pixels
+          // Otherwise maintain current pixel widths
+          if (
+            !editorPanel.style.width ||
+            editorPanel.style.width.includes("%")
+          ) {
+            // Use flex-based layout initially
+            editorPanel.style.width = "";
+            outputPanel.style.width = "";
+            editorPanel.style.flex = "1";
+            outputPanel.style.flex = "1";
+          }
         }
       }
 
