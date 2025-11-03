@@ -1007,7 +1007,54 @@
         <p>This has Python and JavaScript language compatibility.</p>
         <p class="contact">Any queries? Please contact me:</p>
         <p class="contact">Instagram: @yourboy_prats</p>
-        <button class="modal-close" onclick="hideAbout()">Close</button>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+          <button class="modal-close" onclick="showUpdates()">🚀 Updates</button>
+          <button class="modal-close" onclick="hideAbout()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Updates Modal -->
+    <div class="modal-overlay" id="updatesModal">
+      <div class="modal" style="max-width: 600px;">
+        <h2>🚀 Latest Updates</h2>
+        <div style="text-align: left; max-height: 400px; overflow-y: auto;">
+          <h3 style="color: var(--accent); margin: 16px 0 8px 0;">🎯 What's New for You:</h3>
+          <br>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⚡ Instant Theme Preview</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">See themes change live while browsing - no clicking needed!</p>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⌨️ Arrow Key Navigation</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Quick ↑/↓ to cycle through all 7 themes instantly</p>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">🌙 Dark Modern Theme</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Ultra-dark VS Code look with authentic blue accents</p>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">💼 Professional Feel</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Looks and behaves exactly like VS Code</p>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">🎨 Beautiful Syntax Colors</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Proper color-coded JavaScript/Python highlighting in all themes</p>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⚡ Zero Lag</h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Themes switch instantly with no flicker or delay</p>
+          </div>
+          
+
+        </div>
+        <button class="modal-close" onclick="hideUpdates()">Close</button>
       </div>
     </div>
 
@@ -2157,10 +2204,25 @@
         document.getElementById("aboutModal").classList.remove("show");
       }
 
+      function showUpdates() {
+        hideAbout();
+        document.getElementById("updatesModal").classList.add("show");
+      }
+
+      function hideUpdates() {
+        document.getElementById("updatesModal").classList.remove("show");
+      }
+
       // Close modal when clicking outside
       document.getElementById("aboutModal").addEventListener("click", (e) => {
         if (e.target.id === "aboutModal") {
           hideAbout();
+        }
+      });
+
+      document.getElementById("updatesModal").addEventListener("click", (e) => {
+        if (e.target.id === "updatesModal") {
+          hideUpdates();
         }
       });
 
@@ -2176,6 +2238,7 @@
         }
         if (e.key === "Escape") {
           hideAbout();
+          hideUpdates();
         }
       });
     </script>
