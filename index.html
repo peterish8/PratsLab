@@ -206,37 +206,37 @@
       /* 🎨 VS Code Dark Modern Theme */
       .theme-dark-modern {
         /* ===== Base UI Colors ===== */
-        --bg-primary: #0f0f0f;        /* Much darker editor background */
-        --bg-secondary: #141414;      /* Very dark sidebar */
-        --bg-tertiary: #1a1a1a;       /* Darker tabs/header */
-        --border: #2a2a2a;            /* Darker borders */
+        --bg-primary: #0f0f0f; /* Much darker editor background */
+        --bg-secondary: #141414; /* Very dark sidebar */
+        --bg-tertiary: #1a1a1a; /* Darker tabs/header */
+        --border: #2a2a2a; /* Darker borders */
 
         /* ===== Text Colors ===== */
-        --text-primary: #d4d4d4;      /* Light gray text */
-        --text-secondary: #c5c5c5;    /* Dimmed gray */
-        --text-muted: #858585;        /* Muted gray */
+        --text-primary: #d4d4d4; /* Light gray text */
+        --text-secondary: #c5c5c5; /* Dimmed gray */
+        --text-muted: #858585; /* Muted gray */
 
         /* ===== Accent & Interaction ===== */
-        --accent: #007acc;            /* VS Code blue */
-        --accent-hover: #005a9e;      /* Darker blue hover */
-        --accent-border: #3399ff;     /* Light blue border */
+        --accent: #007acc; /* VS Code blue */
+        --accent-hover: #005a9e; /* Darker blue hover */
+        --accent-border: #3399ff; /* Light blue border */
 
         /* ===== Syntax Highlighting ===== */
-        --syntax-comment: #6a9955;    /* Green comments */
-        --syntax-keyword: #569cd6;    /* Blue keywords */
-        --syntax-string: #ce9178;     /* Orange strings */
-        --syntax-number: #b5cea8;     /* Light green numbers */
-        --syntax-function: #dcdcaa;   /* Yellow functions */
-        --syntax-variable: #9cdcfe;   /* Cyan variables */
-        --syntax-class: #4ec9b0;      /* Teal classes */
+        --syntax-comment: #6a9955; /* Green comments */
+        --syntax-keyword: #569cd6; /* Blue keywords */
+        --syntax-string: #ce9178; /* Orange strings */
+        --syntax-number: #b5cea8; /* Light green numbers */
+        --syntax-function: #dcdcaa; /* Yellow functions */
+        --syntax-variable: #9cdcfe; /* Cyan variables */
+        --syntax-class: #4ec9b0; /* Teal classes */
 
         /* ===== Status / Feedback ===== */
-        --error: #f48771;             /* Red errors */
-        --warning: #cca700;           /* Orange warnings */
-        --success: #89d185;           /* Green success */
+        --error: #f48771; /* Red errors */
+        --warning: #cca700; /* Orange warnings */
+        --success: #89d185; /* Green success */
 
         /* ===== Terminal ===== */
-        --terminal-bg: #0f0f0f;       /* Match editor */
+        --terminal-bg: #0f0f0f; /* Match editor */
         --terminal-text: #d4d4d4;
         --terminal-cursor: #007acc;
 
@@ -452,13 +452,17 @@
 
       .terminal-tabs {
         display: flex;
+        align-items: center; /* vertical center for tabs and + button */
         background: var(--bg-tertiary);
         border-bottom: 1px solid var(--border);
         overflow-x: auto;
         flex-shrink: 0;
         min-height: 40px;
+        height: 40px; /* normalize header height */
         width: 100%;
         box-sizing: border-box;
+        padding: 0 8px; /* breathing room on edges */
+        gap: 0;
       }
 
       .terminal-tab {
@@ -471,6 +475,7 @@
         border-right: 1px solid var(--border);
         display: flex;
         align-items: center;
+        height: 32px; /* consistent pill height */
         gap: 6px;
         min-width: 120px;
       }
@@ -513,13 +518,18 @@
       .add-terminal {
         background: var(--accent);
         color: var(--bg-primary);
-        border: none;
-        padding: 8px 12px;
+        border: 1px solid var(--accent-border);
+        padding: 6px 12px;
         cursor: pointer;
         font-size: 12px;
         flex-shrink: 0;
-        margin-left: auto;
-        margin-right: 8px;
+        margin-left: auto; /* push to right */
+        margin-right: 8px; /* away from edge */
+        border-radius: var(--button-radius);
+        height: 32px; /* match tab height */
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .resizer {
@@ -633,7 +643,7 @@
       }
 
       .output-header {
-        padding: 10px 12px;
+        padding: 8px 12px; /* match tabs padding */
         background: var(--bg-tertiary);
         border-bottom: 1px solid var(--border);
         font-size: 12px;
@@ -643,6 +653,7 @@
         align-items: center;
         flex-shrink: 0;
         min-height: 40px;
+        height: 40px; /* align with tabs */
         width: 100%;
         box-sizing: border-box;
       }
@@ -714,10 +725,14 @@
         color: var(--text-secondary);
         border: 1px solid var(--border);
         padding: 4px 8px;
-        border-radius: 3px;
+        border-radius: var(--button-radius);
         cursor: pointer;
         font-size: 11px;
         transition: all 0.2s;
+        height: 28px; /* look consistent with tabs */
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .clear-btn:hover {
@@ -1007,8 +1022,17 @@
         <p>This has Python and JavaScript language compatibility.</p>
         <p class="contact">Any queries? Please contact me:</p>
         <p class="contact">Instagram: @yourboy_prats</p>
-        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
-          <button class="modal-close" onclick="showUpdates()">🚀 Updates</button>
+        <div
+          style="
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+          "
+        >
+          <button class="modal-close" onclick="showUpdates()">
+            🚀 Updates
+          </button>
           <button class="modal-close" onclick="hideAbout()">Close</button>
         </div>
       </div>
@@ -1016,43 +1040,103 @@
 
     <!-- Updates Modal -->
     <div class="modal-overlay" id="updatesModal">
-      <div class="modal" style="max-width: 600px;">
+      <div class="modal" style="max-width: 600px">
         <h2>🚀 Latest Updates</h2>
-        <div style="text-align: left; max-height: 400px; overflow-y: auto;">
-          <h3 style="color: var(--accent); margin: 16px 0 8px 0;">🎯 What's New for You:</h3>
-          <br>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⚡ Instant Theme Preview</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">See themes change live while browsing - no clicking needed!</p>
-          </div>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⌨️ Arrow Key Navigation</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Quick ↑/↓ to cycle through all 7 themes instantly</p>
-          </div>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">🌙 Dark Modern Theme</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Ultra-dark VS Code look with authentic blue accents</p>
-          </div>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">💼 Professional Feel</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Looks and behaves exactly like VS Code</p>
-          </div>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">🎨 Beautiful Syntax Colors</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Proper color-coded JavaScript/Python highlighting in all themes</p>
-          </div>
-          
-          <div style="margin-bottom: 16px;">
-            <h4 style="color: var(--accent); margin-bottom: 4px; vertical-align: top;">⚡ Zero Lag</h4>
-            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px;">Themes switch instantly with no flicker or delay</p>
-          </div>
-          
+        <div style="text-align: left; max-height: 400px; overflow-y: auto">
+          <h3 style="color: var(--accent); margin: 16px 0 8px 0">
+            🎯 What's New for You:
+          </h3>
+          <br />
 
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              ⚡ Instant Theme Preview
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              See themes change live while browsing - no clicking needed!
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              ⌨️ Arrow Key Navigation
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              Quick ↑/↓ to cycle through all 7 themes instantly
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              🌙 Dark Modern Theme
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              Ultra-dark VS Code look with authentic blue accents
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              💼 Professional Feel
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              Looks and behaves exactly like VS Code
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              🎨 Beautiful Syntax Colors
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              Proper color-coded JavaScript/Python highlighting in all themes
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px">
+            <h4
+              style="
+                color: var(--accent);
+                margin-bottom: 4px;
+                vertical-align: top;
+              "
+            >
+              ⚡ Zero Lag
+            </h4>
+            <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
+              Themes switch instantly with no flicker or delay
+            </p>
+          </div>
         </div>
         <button class="modal-close" onclick="hideUpdates()">Close</button>
       </div>
@@ -1354,31 +1438,33 @@
       // Theme management
       let selectedThemeIndex = 0;
       const themeOptions = [
-        { key: 'vscode', name: 'VS Code' },
-        { key: 'black', name: 'Black' },
-        { key: 'matrix', name: 'Matrix' },
-        { key: 'tokyo', name: 'Tokyo Night' },
-        { key: 'solarized', name: 'Solarized Light' },
-        { key: 'monokai-dimmed', name: 'Monokai Dimmed' },
-        { key: 'dark-modern', name: 'Dark Modern' }
+        { key: "vscode", name: "VS Code" },
+        { key: "black", name: "Black" },
+        { key: "matrix", name: "Matrix" },
+        { key: "tokyo", name: "Tokyo Night" },
+        { key: "solarized", name: "Solarized Light" },
+        { key: "monokai-dimmed", name: "Monokai Dimmed" },
+        { key: "dark-modern", name: "Dark Modern" },
       ];
 
       function toggleThemeMenu() {
         const menu = document.getElementById("themeMenu");
         const isOpening = !menu.classList.contains("show");
         menu.classList.toggle("show");
-        
+
         if (isOpening) {
           // Find current theme index
-          selectedThemeIndex = themeOptions.findIndex(t => t.key === currentTheme);
+          selectedThemeIndex = themeOptions.findIndex(
+            (t) => t.key === currentTheme
+          );
           if (selectedThemeIndex === -1) selectedThemeIndex = 0;
           updateThemeSelection();
-          
+
           // Add keyboard listener
-          document.addEventListener('keydown', handleThemeNavigation);
+          document.addEventListener("keydown", handleThemeNavigation);
         } else {
           // Remove keyboard listener
-          document.removeEventListener('keydown', handleThemeNavigation);
+          document.removeEventListener("keydown", handleThemeNavigation);
         }
       }
 
@@ -1419,39 +1505,41 @@
       function handleThemeNavigation(e) {
         const menu = document.getElementById("themeMenu");
         if (!menu.classList.contains("show")) return;
-        
-        if (e.key === 'ArrowDown') {
+
+        if (e.key === "ArrowDown") {
           e.preventDefault();
           selectedThemeIndex = (selectedThemeIndex + 1) % themeOptions.length;
           updateThemeSelection();
           previewTheme(themeOptions[selectedThemeIndex]);
-        } else if (e.key === 'ArrowUp') {
+        } else if (e.key === "ArrowUp") {
           e.preventDefault();
-          selectedThemeIndex = (selectedThemeIndex - 1 + themeOptions.length) % themeOptions.length;
+          selectedThemeIndex =
+            (selectedThemeIndex - 1 + themeOptions.length) %
+            themeOptions.length;
           updateThemeSelection();
           previewTheme(themeOptions[selectedThemeIndex]);
-        } else if (e.key === 'Enter') {
+        } else if (e.key === "Enter") {
           e.preventDefault();
           const selected = themeOptions[selectedThemeIndex];
           selectTheme(selected.key, selected.name);
-        } else if (e.key === 'Escape') {
+        } else if (e.key === "Escape") {
           e.preventDefault();
           document.getElementById("themeMenu").classList.remove("show");
-          document.removeEventListener('keydown', handleThemeNavigation);
+          document.removeEventListener("keydown", handleThemeNavigation);
         }
       }
-      
+
       function updateThemeSelection() {
-        const options = document.querySelectorAll('.theme-option');
+        const options = document.querySelectorAll(".theme-option");
         options.forEach((opt, index) => {
-          opt.classList.toggle('active', index === selectedThemeIndex);
+          opt.classList.toggle("active", index === selectedThemeIndex);
         });
       }
-      
+
       function previewTheme(theme) {
         document.body.className = `theme-${theme.key}`;
         document.getElementById("currentTheme").textContent = theme.name;
-        
+
         if (editor && monaco && monacoThemes[theme.key]) {
           try {
             monaco.editor.setTheme(monacoThemes[theme.key]);
@@ -1471,7 +1559,7 @@
           const menu = document.getElementById("themeMenu");
           if (menu.classList.contains("show")) {
             menu.classList.remove("show");
-            document.removeEventListener('keydown', handleThemeNavigation);
+            document.removeEventListener("keydown", handleThemeNavigation);
           }
         }
       });
