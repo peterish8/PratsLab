@@ -402,18 +402,24 @@
         text-align: left;
         font-variant-ligatures: none;
       }
-      
+
       /* Fix Monaco Editor cursor positioning */
       #editor .monaco-editor {
         direction: ltr !important;
       }
-      
+
       #editor .monaco-editor .view-lines {
         direction: ltr !important;
       }
-      
-      #editor .monaco-editor .cursor {
-        direction: ltr !important;
+
+      /* Fix cursor visual positioning - minimal interference */
+      #editor .monaco-editor .view-lines .view-line {
+        font-variant-ligatures: none !important;
+      }
+
+      /* Fix text rendering for accurate cursor position */
+      #editor .monaco-editor .view-lines .view-line span {
+        font-variant-ligatures: none !important;
       }
 
       .bottom-bar {
@@ -1050,7 +1056,7 @@
           language: initialLanguage,
           theme: monacoThemes[currentTheme],
           fontSize: 14,
-          fontFamily: "Fira Code, Consolas, Monaco, monospace",
+          fontFamily: "Consolas, Monaco, 'Courier New', monospace",
           fontLigatures: false,
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
@@ -1059,15 +1065,13 @@
           lineNumbers: "on",
           folding: true,
           bracketMatching: "always",
-          renderWhitespace: "none",
-          disableLayerHinting: true,
         });
-        
-        // Ensure proper cursor rendering
+
+        // Ensure proper initialization
         setTimeout(() => {
           if (editor) {
-            editor.focus();
             editor.layout();
+            editor.focus();
           }
         }, 100);
 
@@ -1751,17 +1755,17 @@
       function openFile(filename) {
         if (files[filename] !== undefined) {
           currentFile = filename;
-          
+
           // Save current cursor position if switching files
           const position = editor.getPosition();
-          
+
           editor.setValue(files[filename]);
 
           // Set language based on file extension
           const extension = filename.split(".").pop().toLowerCase();
           const language = extension === "py" ? "python" : "javascript";
           monaco.editor.setModelLanguage(editor.getModel(), language);
-          
+
           // Restore cursor position or set to beginning
           setTimeout(() => {
             if (position) {
