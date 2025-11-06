@@ -8,17 +8,28 @@ PratsLab is a clean, focused, and feature-rich code playground that runs entirel
 
 ## ✨ Key Features
 
-- **Dual Language Support**: Write and execute both **JavaScript** and **Python** code with full syntax highlighting.  
-- **VS Code Monaco Editor**: Enjoy the exact same powerful editing experience as VS Code with IntelliSense, bracket matching, and advanced features.  
-- **VS Code-Style File Explorer**: Complete file management system with folders, right-click context menus, inline editing, and drag-and-drop organization.  
-- **Smart Session Memory**: Automatically remembers your last opened file and theme - pick up exactly where you left off.  
-- **7 Professional Themes**: Choose from VS Code Dark, Dark Modern, Tokyo Night, Matrix, Black, Monokai Dimmed, and Solarized Light with instant preview.  
-- **Multi-Tabbed Terminal**: Manage multiple terminal sessions with a tabbed interface, each with its own output history and command support.  
-- **Advanced File Operations**: Create, rename, copy, delete files and folders with VS Code-style right-click context menus.  
-- **Flexible Resizable Layout**: Adjust the size of file explorer, editor, and terminal panels with smooth drag-and-drop resizers.  
-- **Sandboxed Code Execution**: JavaScript runs in secure isolated iframes, Python executes safely in the browser.  
-- **Keyboard-Driven Workflow**: Full keyboard shortcuts including `Ctrl+Enter` (run), `Ctrl+B` (explorer), and arrow key theme navigation.  
-- **Distraction-Free Experience**: Clean interface with fullscreen mode and zero ads for maximum focus.  
+- **Dual Language Support**:
+    Write and execute both **JavaScript** and **Python** code with full syntax highlighting.  
+- **VS Code Monaco Editor**:
+    Enjoy the exact same powerful editing experience as VS Code with IntelliSense, bracket matching, and advanced features.  
+- **VS Code-Style File Explorer**:
+    Complete file management system with folders, right-click context menus, inline editing, and drag-and-drop organization.  
+- **Smart Session Memory**:
+    Automatically remembers your last opened file and theme - pick up exactly where you left off.  
+- **7 Professional Themes**:
+    Choose from VS Code Dark, Dark Modern, Tokyo Night, Matrix, Black, Monokai Dimmed, and Solarized Light with instant preview.  
+- **Multi-Tabbed Terminal**:
+    Manage multiple terminal sessions with a tabbed interface, each with its own output history and command support.  
+- **Advanced File Operations**:
+    Create, rename, copy, delete files and folders with VS Code-style right-click context menus.  
+- **Flexible Resizable Layout**:
+    Adjust the size of file explorer, editor, and terminal panels with smooth drag-and-drop resizers.  
+- **Sandboxed Code Execution**:
+    JavaScript runs in secure isolated iframes, Python executes safely in the browser.  
+- **Keyboard-Driven Workflow**:
+    Full keyboard shortcuts including `Ctrl+Enter` (run), `Ctrl+B` (explorer), and arrow key theme navigation.  
+- **Distraction-Free Experience**:
+    Clean interface with fullscreen mode and zero ads for maximum focus.  
 
 ---
 
