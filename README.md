@@ -2,7 +2,7 @@
 
 PratsLab is a clean, focused, and feature-rich code playground that runs entirely in your browser. Built with a modern VS Code-style aesthetic, it provides a seamless environment for writing and testing both JavaScript and Python code without any backend setup. It saves your work locally and comes packed with professional themes and a flexible layout to match your workflow.
 
-*(Feel free to replace this with a screenshot of your app!)*
+![PratsLab Interface](image.png)
 
 ---
 
