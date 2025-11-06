@@ -15,7 +15,8 @@
         font-family: "Consolas", "Fira Code", monospace;
         height: 100vh;
         overflow: hidden;
-        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
       }
 
       /* Theme Variables */
@@ -253,6 +254,7 @@
         align-items: center;
         border-bottom: 1px solid var(--border);
         font-size: 14px;
+        flex-shrink: 0;
       }
 
       .logo {
@@ -336,19 +338,22 @@
       }
 
       .container {
+        flex: 1;
         display: flex;
-        height: calc(100vh - 110px);
+        align-items: stretch;
+        min-height: 0;
       }
 
       .sidebar {
         width: 250px;
-        min-width: 120px;
+        min-width: 100px;
         max-width: 500px;
         background: var(--bg-secondary);
         display: flex;
         flex-direction: column;
-        transition: width 0.3s;
         flex-shrink: 0;
+        transition: none;
+        overflow: hidden;
       }
 
       .sidebar-resizer {
@@ -376,12 +381,131 @@
         border-bottom: 1px solid var(--border);
         font-size: 12px;
         font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .explorer-actions {
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .sidebar-header:hover .explorer-actions {
+        opacity: 1;
+      }
+
+      .explorer-action {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 4px;
+        border-radius: 3px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        transition: all 0.2s;
+      }
+
+      .explorer-action:hover {
+        background: var(--border);
+        color: var(--text-primary);
       }
 
       .file-tree {
         flex: 1;
         padding: 8px;
         overflow-y: auto;
+      }
+
+      .folder-item {
+        padding: 4px 8px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        user-select: none;
+        position: relative;
+      }
+
+      .folder-item:hover {
+        background: var(--bg-tertiary);
+      }
+
+
+
+      .folder-item.expanded {
+        color: var(--text-primary);
+      }
+
+      .folder-contents {
+        margin-left: 16px;
+        display: none;
+      }
+
+      .folder-contents.expanded {
+        display: block;
+      }
+
+      .file-item.in-folder {
+        margin-left: 16px;
+      }
+
+      .inline-input {
+        background: var(--bg-primary);
+        border: 1px solid var(--accent);
+        color: var(--text-primary);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        width: 150px;
+      }
+
+      .context-menu {
+        position: fixed;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        z-index: 10000;
+        min-width: 160px;
+        display: none;
+        padding: 4px 0;
+      }
+
+      .context-menu.show {
+        display: block;
+      }
+
+      .context-menu-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+
+      .context-menu-item:hover {
+        background: var(--accent);
+        color: var(--bg-primary);
+      }
+
+      .context-menu-separator {
+        height: 1px;
+        background: var(--border);
+        margin: 4px 0;
       }
 
       .file-item {
@@ -392,6 +516,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        user-select: none;
       }
 
       .file-item:hover {
@@ -403,37 +528,16 @@
         color: var(--bg-primary);
       }
 
-      .file-actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
 
-      .file-btn {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text-secondary);
-        padding: 8px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-      }
-
-      .file-btn:hover {
-        background: var(--border);
-        transform: translateY(-1px);
-      }
 
       .editor-panel {
         flex: 1;
-        min-width: 300px;
+        min-width: 200px;
         display: flex;
         flex-direction: column;
         border-right: 1px solid var(--border);
+        height: 100%;
+        overflow: hidden;
       }
 
       .editor-panel #editor {
@@ -442,12 +546,13 @@
 
       .output-panel {
         width: 50%;
-        min-width: 300px;
+        min-width: 200px;
         display: flex;
         flex-direction: column;
         background: var(--bg-secondary);
         flex-shrink: 0;
         overflow: hidden;
+        height: 100%;
       }
 
       .terminal-tabs {
@@ -534,9 +639,11 @@
 
       .resizer {
         width: 4px;
-        background: var(--border);
+        background: transparent;
         cursor: col-resize;
         transition: background 0.2s;
+        border-right: 1px solid var(--border);
+        flex-shrink: 0;
       }
 
       .resizer:hover {
@@ -571,18 +678,14 @@
       }
 
       .bottom-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
         background: var(--bg-tertiary);
         border-top: 1px solid var(--border);
         padding: 12px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        z-index: 1000;
         height: 60px;
+        flex-shrink: 0;
         transition: transform 0.3s ease;
       }
 
@@ -888,6 +991,68 @@
       ::-webkit-scrollbar-thumb:hover {
         background: var(--accent);
       }
+
+      /* Monaco Editor scrollbar */
+      #editor .monaco-scrollable-element > .scrollbar > .slider {
+        background: var(--border) !important;
+        border-radius: 6px !important;
+      }
+
+      #editor .monaco-scrollable-element > .scrollbar > .slider:hover {
+        background: var(--accent) !important;
+      }
+
+      #editor .monaco-scrollable-element > .scrollbar.vertical {
+        width: 6px !important;
+      }
+
+      #editor .monaco-scrollable-element > .scrollbar.horizontal {
+        height: 6px !important;
+      }
+
+      #editor .monaco-scrollable-element > .scrollbar {
+        background: transparent !important;
+      }
+
+      /* Hide overview ruler decorations */
+      #editor .decorationsOverviewRuler {
+        display: none !important;
+      }
+
+      #editor .monaco-editor .overview-ruler {
+        display: none !important;
+      }
+
+      /* Responsive layout for smaller viewports */
+      @media (max-width: 1200px) {
+        .sidebar {
+          min-width: 80px;
+        }
+        .editor-panel {
+          min-width: 150px;
+        }
+        .output-panel {
+          min-width: 150px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .container {
+          flex-direction: column;
+        }
+        .output-panel {
+          width: 100%;
+          height: 40%;
+        }
+        .editor-panel {
+          height: 60%;
+        }
+        .resizer {
+          width: 100%;
+          height: 4px;
+          cursor: row-resize;
+        }
+      }
     </style>
     <link rel="icon" type="image/jpeg" href="img1.jpg" />
     <link
@@ -905,6 +1070,13 @@
     <script src="https://unpkg.com/feather-icons"></script>
   </head>
   <body class="theme-vscode">
+    <script>
+      // Apply saved theme immediately to prevent flashing
+      (function() {
+        const savedTheme = localStorage.getItem('jsPlaygroundTheme') || 'vscode';
+        document.body.className = `theme-${savedTheme}`;
+      })();
+    </script>
     <div class="header">
       <div class="logo">
         <span><i data-feather="zap" onclick="showAbout()"></i> PratsLab</span>
@@ -960,7 +1132,17 @@
     </div>
     <div class="container">
       <div class="sidebar" id="sidebar">
-        <div class="sidebar-header"><i data-feather="folder"></i> EXPLORER</div>
+        <div class="sidebar-header">
+          <span><i data-feather="folder"></i> EXPLORER</span>
+          <div class="explorer-actions">
+            <button class="explorer-action" onclick="createNewFile()" title="New File">
+              <i data-feather="file-plus"></i>
+            </button>
+            <button class="explorer-action" onclick="createNewFolder()" title="New Folder">
+              <i data-feather="folder-plus"></i>
+            </button>
+          </div>
+        </div>
         <div class="file-tree" id="fileTree"></div>
       </div>
       <div class="sidebar-resizer" id="sidebarResizer"></div>
@@ -982,19 +1164,8 @@
     <div class="bottom-bar" id="bottomBar">
       <div class="bottom-bar-left">
         <button class="toggle-sidebar" onclick="toggleSidebar()">
-          <i data-feather="sidebar"></i> Files
+          <i data-feather="sidebar"></i> Explorer
         </button>
-        <div class="file-actions">
-          <button class="file-btn" onclick="createFile()">
-            <i data-feather="file-plus"></i> New
-          </button>
-          <button class="file-btn" onclick="createFolder()">
-            <i data-feather="folder-plus"></i> Folder
-          </button>
-          <button class="file-btn" onclick="deleteFile()">
-            <i data-feather="trash-2"></i> Delete
-          </button>
-        </div>
       </div>
       <div class="bottom-bar-right">
         <span
@@ -1003,7 +1174,7 @@
             color: var(--text-secondary);
             margin-right: 12px;
           "
-          >Ctrl+Enter: Run | Ctrl+b: Explorer
+          >Ctrl+Enter: Run | Ctrl+B: Explorer
         </span>
         <button class="run-btn" onclick="runCode()">
           <i data-feather="play"></i> Run Code
@@ -1021,7 +1192,23 @@
         </p>
         <p>This has Python and JavaScript language compatibility.</p>
         <p class="contact">Any queries? Please contact me:</p>
-        <p class="contact">Instagram: @yourboy_prats</p>
+        <p class="contact">
+          Instagram: <a href="https://www.instagram.com/yourboy_prats" target="_blank" 
+             style="
+               display: inline-block;
+               background: rgba(0, 122, 204, 0.2);
+               color: var(--accent);
+               padding: 4px 8px;
+               border-radius: 4px;
+               text-decoration: none;
+               transition: all 0.2s;
+               border: 1px solid rgba(0, 122, 204, 0.3);
+             "
+             onmouseover="this.style.background='rgba(0, 122, 204, 0.3)'"
+             onmouseout="this.style.background='rgba(0, 122, 204, 0.2)'">
+            @yourboy_prats
+          </a>
+        </p>
         <div
           style="
             display: flex;
@@ -1031,17 +1218,17 @@
           "
         >
           <button class="modal-close" onclick="showUpdates()">
-            🚀 Updates
+            🚀 New Features
           </button>
           <button class="modal-close" onclick="hideAbout()">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Updates Modal -->
+    <!-- New Features Modal -->
     <div class="modal-overlay" id="updatesModal">
       <div class="modal" style="max-width: 600px">
-        <h2>🚀 Latest Updates</h2>
+        <h2>🚀 New Features</h2>
         <div style="text-align: left; max-height: 400px; overflow-y: auto">
           <h3 style="color: var(--accent); margin: 16px 0 8px 0">
             🎯 What's New for You:
@@ -1056,10 +1243,10 @@
                 vertical-align: top;
               "
             >
-              ⚡ Instant Theme Preview
+              📁 VS Code-Style File Explorer
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              See themes change live while browsing - no clicking needed!
+              Create folders, organize files, and manage your projects just like in VS Code
             </p>
           </div>
 
@@ -1071,10 +1258,10 @@
                 vertical-align: top;
               "
             >
-              ⌨️ Arrow Key Navigation
+              🖱️ Right-Click File Management
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              Quick ↑/↓ to cycle through all 7 themes instantly
+              Right-click anywhere to create, rename, copy, or delete files and folders
             </p>
           </div>
 
@@ -1086,10 +1273,10 @@
                 vertical-align: top;
               "
             >
-              🌙 Dark Modern Theme
+              💾 Smart Session Memory
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              Ultra-dark VS Code look with authentic blue accents
+              Remembers your last opened file and theme - pick up exactly where you left off
             </p>
           </div>
 
@@ -1101,10 +1288,10 @@
                 vertical-align: top;
               "
             >
-              💼 Professional Feel
+              🎨 7 Beautiful Themes
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              Looks and behaves exactly like VS Code
+              VS Code, Dark Modern, Tokyo Night, Matrix, and more - with instant preview
             </p>
           </div>
 
@@ -1116,10 +1303,10 @@
                 vertical-align: top;
               "
             >
-              🎨 Beautiful Syntax Colors
+              🧹 Clean Terminal Output
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              Proper color-coded JavaScript/Python highlighting in all themes
+              Shows only your code results or "Code executed successfully" - no clutter
             </p>
           </div>
 
@@ -1131,10 +1318,10 @@
                 vertical-align: top;
               "
             >
-              ⚡ Zero Lag
+              ⚡ Zero Flicker Experience
             </h4>
             <p style="margin-bottom: 8px; font-size: 14px; margin-left: 24px">
-              Themes switch instantly with no flicker or delay
+              Smooth reloads with no theme flashing - professional feel throughout
             </p>
           </div>
         </div>
@@ -1142,20 +1329,29 @@
       </div>
     </div>
 
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu"></div>
+
     <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <script>
       let editor;
       let isResizing = false;
-      let currentTheme = "vscode";
+      let currentTheme = localStorage.getItem('jsPlaygroundTheme') || 'vscode';
       let isFullscreen = false;
       let terminals = [];
       let activeTerminal = 0;
 
       let files = {};
+      let folders = {};
+      let expandedFolders = new Set();
+      let contextTarget = null;
+      let contextType = null;
 
       // Load files from localStorage or use defaults
       function loadFilesFromStorage() {
         const savedFiles = localStorage.getItem("jsPlaygroundFiles");
+        const savedFolders = localStorage.getItem("jsPlaygroundFolders");
+        
         if (savedFiles) {
           files = JSON.parse(savedFiles);
         } else {
@@ -1167,12 +1363,27 @@
           };
           saveFilesToStorage();
         }
+        
+        if (savedFolders) {
+          folders = JSON.parse(savedFolders);
+        }
       }
 
       // Save files to localStorage
       function saveFilesToStorage() {
         localStorage.setItem("jsPlaygroundFiles", JSON.stringify(files));
+        localStorage.setItem("jsPlaygroundCurrentFile", currentFile);
       }
+      
+      // Load current file from localStorage or use default
+      function loadCurrentFile() {
+        const savedCurrentFile = localStorage.getItem("jsPlaygroundCurrentFile");
+        if (savedCurrentFile && files[savedCurrentFile]) {
+          return savedCurrentFile;
+        }
+        return "main.js";
+      }
+      
       let currentFile = "main.js";
       let sidebarVisible = true;
       let bottomBarVisible = true;
@@ -1345,6 +1556,9 @@
       require(["vs/editor/editor.main"], function () {
         // Load files first
         loadFilesFromStorage();
+        
+        // Load last opened file
+        currentFile = loadCurrentFile();
 
         // Define custom themes first
         defineCustomThemes();
@@ -1369,6 +1583,12 @@
           bracketMatching: "always",
           bracketPairColorization: { enabled: false },
           guides: { bracketPairs: false },
+          overviewRulerLanes: 0,
+          renderLineHighlight: "none",
+          occurrencesHighlight: false,
+          selectionHighlight: false,
+          hideCursorInOverviewRuler: true,
+          find: { addExtraSpaceOnTop: false, autoFindInSelection: false },
         });
 
         // Ensure proper initialization
@@ -1902,7 +2122,7 @@
           if (output) {
             addLogEntry(output.trim(), "info");
           } else {
-            addLogEntry("Python code executed (no output)", "info");
+            addLogEntry("Code executed successfully", "info");
           }
         } catch (error) {
           addLogEntry("Python Error: " + error.message, "error");
@@ -1966,7 +2186,13 @@
         }
       }
 
+      let hasOutput = false;
+      let executionStartTime = 0;
+      
       function executeCode(code) {
+        hasOutput = false;
+        executionStartTime = Date.now();
+        
         // Create sandboxed iframe for execution
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";
@@ -2031,10 +2257,13 @@
                     return true;
                 };
 
-
-
                 try {
                     ${code}
+                    // Signal completion
+                    window.parent.postMessage({
+                        type: 'execution-complete',
+                        terminalId: ${activeTerminal}
+                    }, '*');
                 } catch (error) {
                     window.parent.postMessage({
                         type: 'log',
@@ -2056,11 +2285,19 @@
       // Handle messages from iframe
       window.addEventListener("message", function (event) {
         if (event.data.type === "log") {
+          hasOutput = true;
           addLogEntry(
             event.data.message,
             event.data.level,
             event.data.terminalId
           );
+        } else if (event.data.type === "execution-complete") {
+          // Check if no output was generated after a brief delay
+          setTimeout(() => {
+            if (!hasOutput) {
+              addLogEntry("Code executed successfully", "info", event.data.terminalId);
+            }
+          }, 100);
         }
       });
 
@@ -2149,24 +2386,252 @@
         }
       }
 
+      // VS Code-style file management functions
+      function createNewFile() {
+        const tree = document.getElementById("fileTree");
+        const input = document.createElement("input");
+        input.className = "inline-input";
+        input.type = "text";
+        input.placeholder = "filename.js";
+        input.value = "";
+        
+        const container = document.createElement("div");
+        container.className = "file-item";
+        container.innerHTML = `<i data-feather="file-text"></i>`;
+        container.appendChild(input);
+        
+        tree.insertBefore(container, tree.firstChild);
+        input.focus();
+        
+        const finishCreation = () => {
+          const name = input.value.trim();
+          if (name && !files[name]) {
+            const extension = name.split(".").pop().toLowerCase();
+            if (extension === "py") {
+              files[name] = '# New Python file\nprint("Hello from ' + name + '")';
+            } else {
+              files[name] = '// New JavaScript file\nconsole.log("Hello from ' + name + '");';
+            }
+            saveFilesToStorage();
+            renderFileTree();
+            openFile(name);
+          } else {
+            container.remove();
+          }
+        };
+        
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            finishCreation();
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            container.remove();
+          }
+        });
+        
+        input.addEventListener("blur", finishCreation);
+        
+        setTimeout(() => feather.replace(), 10);
+      }
+      
+      function createNewFolder() {
+        const tree = document.getElementById("fileTree");
+        const input = document.createElement("input");
+        input.className = "inline-input";
+        input.type = "text";
+        input.placeholder = "folder name";
+        input.value = "";
+        
+        const container = document.createElement("div");
+        container.className = "folder-item";
+        container.innerHTML = `<i data-feather="folder"></i>`;
+        container.appendChild(input);
+        
+        tree.insertBefore(container, tree.firstChild);
+        input.focus();
+        
+        const finishCreation = () => {
+          const name = input.value.trim();
+          if (name && !folders[name]) {
+            folders[name] = [];
+            localStorage.setItem("jsPlaygroundFolders", JSON.stringify(folders));
+            renderFileTree();
+          } else {
+            container.remove();
+          }
+        };
+        
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            finishCreation();
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            container.remove();
+          }
+        });
+        
+        input.addEventListener("blur", finishCreation);
+        
+        setTimeout(() => feather.replace(), 10);
+      }
+
       // File system management
       function renderFileTree() {
         const tree = document.getElementById("fileTree");
         tree.innerHTML = "";
-
-        Object.keys(files).forEach((filename) => {
-          const item = document.createElement("div");
-          item.className = `file-item ${
-            filename === currentFile ? "active" : ""
-          }`;
-          item.innerHTML = `<i data-feather="file-text"></i> ${filename}`;
-          item.onclick = () => openFile(filename);
-          item.oncontextmenu = (e) => {
-            e.preventDefault();
-            renameFile(filename);
+        
+        // Render folders first
+        Object.keys(folders).forEach((folderName) => {
+          const folderItem = document.createElement("div");
+          folderItem.className = "folder-item";
+          const isExpanded = expandedFolders.has(folderName);
+          folderItem.innerHTML = `
+            <i data-feather="${isExpanded ? 'chevron-down' : 'chevron-right'}"></i>
+            <i data-feather="folder${isExpanded ? '-open' : ''}"></i>
+            ${folderName}
+          `;
+          
+          folderItem.onclick = (e) => {
+            e.stopPropagation();
+            toggleFolder(folderName);
           };
-          tree.appendChild(item);
+          
+          // Add right-click context menu for folder actions
+          folderItem.oncontextmenu = (e) => {
+            e.preventDefault();
+            showContextMenu(e, folderName, 'folder');
+          };
+          
+          tree.appendChild(folderItem);
+          
+          // Render folder contents if expanded
+          if (isExpanded) {
+            const folderContents = document.createElement("div");
+            folderContents.className = "folder-contents expanded";
+            
+            folders[folderName].forEach((filename) => {
+              const item = document.createElement("div");
+              item.className = `file-item in-folder ${
+                filename === currentFile ? "active" : ""
+              }`;
+              item.innerHTML = `<i data-feather="file-text"></i> ${filename.split('/').pop()}`;
+              item.onclick = () => openFile(filename);
+              item.oncontextmenu = (e) => {
+                e.preventDefault();
+                showContextMenu(e, filename, 'file');
+              };
+              folderContents.appendChild(item);
+            });
+            
+            tree.appendChild(folderContents);
+          }
         });
+        
+        // Render root files
+        Object.keys(files).forEach((filename) => {
+          if (!filename.includes('/')) {
+            const item = document.createElement("div");
+            item.className = `file-item ${
+              filename === currentFile ? "active" : ""
+            }`;
+            item.innerHTML = `<i data-feather="file-text"></i> ${filename}`;
+            item.onclick = () => openFile(filename);
+            item.oncontextmenu = (e) => {
+              e.preventDefault();
+              showContextMenu(e, filename, 'file');
+            };
+            tree.appendChild(item);
+          }
+        });
+        
+        setTimeout(() => feather.replace(), 10);
+      }
+      
+      function toggleFolder(folderName) {
+        if (expandedFolders.has(folderName)) {
+          expandedFolders.delete(folderName);
+        } else {
+          expandedFolders.add(folderName);
+        }
+        renderFileTree();
+      }
+      
+      function createFileInFolder(folderName) {
+        const tree = document.getElementById("fileTree");
+        const input = document.createElement("input");
+        input.className = "inline-input";
+        input.type = "text";
+        input.placeholder = "filename.js";
+        input.value = "";
+        
+        const container = document.createElement("div");
+        container.className = "file-item in-folder";
+        container.innerHTML = `<i data-feather="file-text"></i>`;
+        container.appendChild(input);
+        
+        // Ensure folder is expanded first
+        if (!expandedFolders.has(folderName)) {
+          expandedFolders.add(folderName);
+          renderFileTree();
+          // Re-run after render to find the expanded folder contents
+          setTimeout(() => {
+            const folderContents = tree.querySelector('.folder-contents.expanded');
+            if (folderContents) {
+              folderContents.appendChild(container);
+            } else {
+              tree.appendChild(container);
+            }
+            input.focus();
+          }, 50);
+          return;
+        }
+        
+        // Find folder contents and add input there
+        const folderContents = tree.querySelector('.folder-contents.expanded');
+        if (folderContents) {
+          folderContents.appendChild(container);
+        } else {
+          tree.appendChild(container);
+        }
+        
+        input.focus();
+        
+        const finishCreation = () => {
+          const name = input.value.trim();
+          if (name) {
+            const fullPath = `${folderName}/${name}`;
+            if (!files[fullPath]) {
+              const extension = name.split(".").pop().toLowerCase();
+              if (extension === "py") {
+                files[fullPath] = '# New Python file\nprint("Hello from ' + name + '")';
+              } else {
+                files[fullPath] = '// New JavaScript file\nconsole.log("Hello from ' + name + '");';
+              }
+              folders[folderName].push(fullPath);
+              saveFilesToStorage();
+              localStorage.setItem("jsPlaygroundFolders", JSON.stringify(folders));
+              renderFileTree();
+              openFile(fullPath);
+            }
+          }
+          container.remove();
+        };
+        
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            finishCreation();
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            container.remove();
+          }
+        });
+        
+        input.addEventListener("blur", finishCreation);
+        
+        setTimeout(() => feather.replace(), 10);
       }
 
       function openFile(filename) {
@@ -2198,68 +2663,94 @@
         }
       }
 
-      function createFile() {
-        showTerminalPrompt("Enter file name:", "newfile.js", (name) => {
-          if (name && !files[name]) {
-            const extension = name.split(".").pop().toLowerCase();
-            if (extension === "py") {
-              files[name] =
-                '# 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nprint("Hello from ' +
-                name +
-                '")';
-            } else {
-              files[name] =
-                '// 🎉 Hello Friend! Welcome to the JS Playground! Made by ur frnd prats 🚀\nconsole.log("Hello from ' +
-                name +
-                '");';
-            }
-            saveFilesToStorage();
-            renderFileTree();
-            openFile(name);
-          }
-        });
-      }
 
-      function createFolder() {
-        addLogEntry(
-          "Folders not implemented yet - use file names with / for organization",
-          "info"
-        );
-      }
-
-      function deleteFile() {
-        if (Object.keys(files).length <= 1) {
-          addLogEntry("Cannot delete the last file", "error");
-          return;
-        }
-
-        showTerminalPrompt(`Delete ${currentFile}? (y/n):`, "", (answer) => {
-          if (answer.toLowerCase() === "y" || answer.toLowerCase() === "yes") {
-            const deletedFile = currentFile;
-            delete files[currentFile];
-            saveFilesToStorage();
-            const remaining = Object.keys(files);
-            currentFile = remaining[0];
-            editor.setValue(files[currentFile]);
-            renderFileTree();
-            addLogEntry(`Deleted ${deletedFile}`, "info");
-          }
-        });
-      }
 
       function renameFile(oldName) {
-        showTerminalPrompt("Enter new name:", oldName, (newName) => {
-          if (newName && newName !== oldName && !files[newName]) {
-            files[newName] = files[oldName];
-            delete files[oldName];
-            if (currentFile === oldName) {
-              currentFile = newName;
-            }
-            saveFilesToStorage();
-            renderFileTree();
-            addLogEntry(`Renamed ${oldName} to ${newName}`, "info");
+        // Find the item in the tree and replace with input
+        const tree = document.getElementById('fileTree');
+        const items = tree.querySelectorAll('.file-item, .folder-item');
+        
+        for (let item of items) {
+          const itemText = item.textContent.trim();
+          const displayName = oldName.includes('/') ? oldName.split('/').pop() : oldName;
+          
+          if (itemText === displayName || itemText === oldName) {
+            const input = document.createElement('input');
+            input.className = 'inline-input';
+            input.type = 'text';
+            input.value = displayName;
+            
+            // Store original content
+            const originalContent = item.innerHTML;
+            
+            // Replace item content with input
+            item.innerHTML = '';
+            item.appendChild(input);
+            input.focus();
+            input.select();
+            
+            const finishRename = () => {
+              const newName = input.value.trim();
+              if (newName && newName !== displayName) {
+                const fullNewName = oldName.includes('/') ? 
+                  oldName.substring(0, oldName.lastIndexOf('/') + 1) + newName : newName;
+                
+                if (!files[fullNewName] && !folders[newName]) {
+                  if (contextType === 'folder') {
+                    // Rename folder
+                    folders[newName] = folders[oldName];
+                    delete folders[oldName];
+                    expandedFolders.delete(oldName);
+                    if (expandedFolders.has(oldName)) {
+                      expandedFolders.add(newName);
+                    }
+                    localStorage.setItem('jsPlaygroundFolders', JSON.stringify(folders));
+                  } else {
+                    // Rename file
+                    files[fullNewName] = files[oldName];
+                    delete files[oldName];
+                    
+                    // Update folder references
+                    Object.keys(folders).forEach(folderName => {
+                      const index = folders[folderName].indexOf(oldName);
+                      if (index > -1) {
+                        folders[folderName][index] = fullNewName;
+                      }
+                    });
+                    
+                    if (currentFile === oldName) {
+                      currentFile = fullNewName;
+                    }
+                    
+                    saveFilesToStorage();
+                    localStorage.setItem('jsPlaygroundFolders', JSON.stringify(folders));
+                  }
+                  
+                  renderFileTree();
+                  return;
+                }
+              }
+              
+              // Restore original content if rename failed/cancelled
+              item.innerHTML = originalContent;
+              setTimeout(() => feather.replace(), 10);
+            };
+            
+            input.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                finishRename();
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                item.innerHTML = originalContent;
+                setTimeout(() => feather.replace(), 10);
+              }
+            });
+            
+            input.addEventListener('blur', finishRename);
+            break;
           }
-        });
+        }
       }
 
       function toggleSidebar() {
@@ -2316,6 +2807,153 @@
         }
       });
 
+      // Context menu functions
+      function showContextMenu(event, target, type) {
+        contextTarget = target;
+        contextType = type;
+        
+        const menu = document.getElementById('contextMenu');
+        
+        // Update menu content based on context
+        if (type === 'file') {
+          menu.innerHTML = `
+            <div class="context-menu-item" onclick="contextRename()">
+              <i data-feather="edit-2"></i> Rename
+            </div>
+            <div class="context-menu-item" onclick="contextCopy()">
+              <i data-feather="copy"></i> Copy
+            </div>
+            <div class="context-menu-item" onclick="contextDelete()">
+              <i data-feather="trash-2"></i> Delete
+            </div>
+          `;
+        } else {
+          // For folders and empty space
+          menu.innerHTML = `
+            <div class="context-menu-item" onclick="contextNewFile()">
+              <i data-feather="file-plus"></i> New File
+            </div>
+            <div class="context-menu-item" onclick="contextNewFolder()">
+              <i data-feather="folder-plus"></i> New Folder
+            </div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item" onclick="contextRename()">
+              <i data-feather="edit-2"></i> Rename
+            </div>
+            <div class="context-menu-item" onclick="contextDelete()">
+              <i data-feather="trash-2"></i> Delete
+            </div>
+          `;
+        }
+        
+        menu.style.left = event.pageX + 'px';
+        menu.style.top = event.pageY + 'px';
+        menu.classList.add('show');
+        
+        // Update feather icons
+        setTimeout(() => feather.replace(), 10);
+      }
+      
+      function hideContextMenu() {
+        document.getElementById('contextMenu').classList.remove('show');
+        contextTarget = null;
+        contextType = null;
+      }
+      
+      function contextNewFile() {
+        if (contextType === 'folder') {
+          createFileInFolder(contextTarget);
+        } else {
+          createNewFile();
+        }
+        hideContextMenu();
+      }
+      
+      function contextNewFolder() {
+        createNewFolder();
+        hideContextMenu();
+      }
+      
+      function contextRename() {
+        if (contextTarget) {
+          renameFile(contextTarget);
+        }
+        hideContextMenu();
+      }
+      
+      function contextCopy() {
+        if (contextTarget && files[contextTarget]) {
+          const content = files[contextTarget];
+          const extension = contextTarget.split('.').pop();
+          const baseName = contextTarget.replace(/\.[^/.]+$/, "");
+          const copyName = `${baseName}_copy.${extension}`;
+          
+          if (!files[copyName]) {
+            files[copyName] = content;
+            saveFilesToStorage();
+            renderFileTree();
+          }
+        }
+        hideContextMenu();
+      }
+      
+      function contextDelete() {
+        if (contextTarget) {
+          if (contextType === 'folder') {
+            // Delete folder and all its files
+            if (folders[contextTarget]) {
+              folders[contextTarget].forEach(filename => {
+                delete files[filename];
+              });
+              delete folders[contextTarget];
+              expandedFolders.delete(contextTarget);
+              localStorage.setItem('jsPlaygroundFolders', JSON.stringify(folders));
+              saveFilesToStorage();
+              renderFileTree();
+            }
+          } else {
+            // Delete file
+            if (Object.keys(files).length > 1) {
+              delete files[contextTarget];
+              
+              // Remove from folder if it's in one
+              Object.keys(folders).forEach(folderName => {
+                const index = folders[folderName].indexOf(contextTarget);
+                if (index > -1) {
+                  folders[folderName].splice(index, 1);
+                }
+              });
+              
+              if (currentFile === contextTarget) {
+                const remaining = Object.keys(files);
+                currentFile = remaining[0];
+                editor.setValue(files[currentFile]);
+              }
+              
+              localStorage.setItem('jsPlaygroundFolders', JSON.stringify(folders));
+              saveFilesToStorage();
+              renderFileTree();
+            }
+          }
+        }
+        hideContextMenu();
+      }
+      
+      // Hide context menu when clicking elsewhere
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.context-menu')) {
+          hideContextMenu();
+        }
+      });
+      
+      // Add right-click to empty space in file tree
+      document.getElementById('fileTree').addEventListener('contextmenu', (e) => {
+        if (e.target.id === 'fileTree') {
+          e.preventDefault();
+          showContextMenu(e, null, 'empty');
+        }
+      });
+
       // Global keyboard shortcuts
       document.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.key === "b") {
@@ -2329,6 +2967,7 @@
         if (e.key === "Escape") {
           hideAbout();
           hideUpdates();
+          hideContextMenu();
         }
       });
     </script>
